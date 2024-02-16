@@ -7,6 +7,14 @@ Project("{BBD0F5D1-1CC4-42FD-BA4C-A96779C64378}") = "HelloWorldSender", "HelloWo
 EndProject
 Project("{BBD0F5D1-1CC4-42FD-BA4C-A96779C64378}") = "HelloWorldReceiver", "HelloWorldReceiver\HelloWorldReceiver.synproj", "{425EE03A-3B68-4CE6-AED2-BF60A5343206}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F05CC3F-72F1-4C8E-8596-2BA4295E7600}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
