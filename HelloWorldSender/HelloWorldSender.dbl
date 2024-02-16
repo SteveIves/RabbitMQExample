@@ -1,0 +1,51 @@
+
+import System.Collections.Generic
+import System.Text
+import RabbitMQ.Client
+
+main
+proc
+    ;Queue configuration
+    data queueName = "ReplicationQueue" ;Queues have names so that applications can reference them.
+    data queueDurable = true            ;Should the queue survive a broker restart (queue meta-data stored on disk)
+    data queueExclusive = false         ;Should the queue be used by only one connection and deleted when that connection closes
+    data queueAutoDelete = false        ;Should the queue that has had at least one consumer be deleted when last consumer unsubscribes
+    data queueArguments, @Dictionary<string,object> ;Optional; used by plugins and broker-specific features such as message TTL, queue length limit, etc.
+
+    ;Message configuration
+    data messageExchange = String.Empty
+    data messageRoutingKey = queueName
+    data messageBasicProperties, @IBasicProperties
+    data messageBody, @ReadOnlyMemory<byte>
+
+    ;Create a connection to the RabbitMQ server
+    data factory = new ConnectionFactory() { HostName = "localhost" }
+    disposable data connection = factory.CreateConnection()
+    disposable data channel = connection.CreateModel()
+
+    ;Declare the queue we're going to consume. If the queue does not exist this will create it.
+    channel.QueueDeclare(queueName,queueDurable,queueExclusive,queueAutoDelete,queueArguments)
+
+    ;Tell the user how to exit when they are done
+    Console.WriteLine("Ready to send messgaes. Press ENTER when done.")
+    Console.WriteLine()
+
+    ;Process messages
+    repeat
+    begin
+        ;Get the message to send
+        Console.Write("Message to send: ")
+        data message = Console.ReadLine()
+
+        ;Are we done?
+        if (message.Trim().ToUpper().Equals("EXIT"))
+            exitloop
+
+        ;Prepare the message
+        messageBody = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(message))
+
+        ;Send the message
+        channel.BasicPublish(messageExchange,messageRoutingKey,messageBasicProperties,messageBody)
+    end
+
+endmain

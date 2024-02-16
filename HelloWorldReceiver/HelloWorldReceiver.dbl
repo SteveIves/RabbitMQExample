@@ -1,0 +1,50 @@
+
+import System.Collections.Generic
+import System.Text
+import RabbitMQ.Client
+import RabbitMQ.Client.Events
+
+main
+proc
+    ;Queue configuration
+    data queueName = "ReplicationQueue" ;Queues have names so that applications can reference them
+    data queueDurable = true            ;Should the queue survive a broker restart (queue meta-data stored on disk)
+    data queueExclusive = false         ;Should the queue be used by only one connection and deleted when that connection closes
+    data queueAutoDelete = false        ;Should the queue that has had at least one consumer be deleted when last consumer unsubscribes
+    data queueArguments, @Dictionary<string,object> ;Optional; used by plugins and broker-specific features such as message TTL, queue length limit, etc.
+
+    ;Message configuration
+    data messageAutoAcknowledge = true
+
+    ;Create a connection to the RabbitMQ server
+    data factory = new ConnectionFactory() { HostName = "localhost" }
+    disposable data connection = factory.CreateConnection()
+    disposable data channel = connection.CreateModel()
+
+    ;Declare the queue we're going to consume. If the queue does not exist this will create it.
+    channel.QueueDeclare(queueName,queueDurable,queueExclusive,queueAutoDelete,queueArguments)
+
+    ;Tell the user how to exit when they are done
+    Console.WriteLine("Ready to receive messages, press a key to end.")
+    Console.WriteLine()
+
+    ;Declare an event handler to be called when a message arrives
+    lambda messageReceived(model,ea)
+    begin
+        data body, [#]byte, ea.Body.ToArray()
+        data message, string, Encoding.UTF8.GetString(body)
+        Console.WriteLine("Received message {0}",message)
+    end
+
+    ;Declare a consumer to receive messages from the queue and hook up the event handler
+    data consumer = new EventingBasicConsumer(channel)
+    consumer.Received += messageReceived
+
+    ;Start consuming messages
+    channel.BasicConsume(queueName,messageAutoAcknowledge,consumer)
+
+    ;We'll wait here in ReadKey while events are processed. Pressing a key will end the process.
+    Console.ReadKey()
+    Console.WriteLine()
+
+endmain

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="restore;Build">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework Condition="'$(TargetFrameworkOverride)' == ''">net6.0</TargetFramework>
+    <TargetFramework Condition="'$(TargetFrameworkOverride)' != ''">$(TargetFrameworkOverride)</TargetFramework>
+    <DefaultLanguageSourceExtension>.dbl</DefaultLanguageSourceExtension>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <ProjectGuid>{7c454ff7-a9c2-4d3d-b3d4-9c1ee3fee044}</ProjectGuid>
+    <Name>HelloWorldSender</Name>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="HelloWorldSender.dbl" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client">
+      <Version>6.5.0</Version>
+    </PackageReference>
+    <PackageReference Include="Synergex.SynergyDE.Build" Version="23.*" />
+    <PackageReference Include="Synergex.SynergyDE.synrnt" Version="12.*" />
+  </ItemGroup>
+</Project>
